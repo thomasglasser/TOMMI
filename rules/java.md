@@ -28,6 +28,7 @@
 * **Optional Usage**:
   * **Optional Unwrapping Shadowing**: Do NOT flag local variables that shadow an `Optional` field or parameter when storing the unwrapped value (e.g., `HolderSet<Kamikotization> kamikotizations = this.kamikotizations.get();`); unwrapping an `Optional` into a local variable of the same name is acceptable.
   * **Optional.ifPresent Usage**: Do NOT flag `Optional.ifPresent(...)` or suggest replacing it with `isPresent()` and `.get()` checks to avoid lambda allocations; `ifPresent` is cleaner and the performance overhead is negligible outside of per-tick hot paths.
+  * **Avoid `isPresent()` Followed by `.get()`**: NEVER check `optional.isPresent()` followed immediately by an unconditional `optional.get()`. ALWAYS use functional composition methods like `.ifPresent(...)`, `.orElse(null)`, `.map(...)`, or `.flatMap(...)` to handle presence cleanly without verbose double-lookup patterns.
 * **Java Streams & Iteration**:
   * **Avoid Streams in Hot Paths**: Avoid using the Java Streams API (`.stream().filter()...`) in frequently executed code or per-tick loops; use direct for-loops or FastUtil iterators.
   * **Streams in One-Off Events**: Do NOT flag Java Stream API usage in one-off, infrequent event handlers (e.g., `LuckyCharmEvent` or on-demand ability triggers) or datagen providers that are not performance-sensitive or executed per-tick.
