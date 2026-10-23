@@ -130,7 +130,7 @@ def main():
             diff_text = reviewer_instance.fetch_pr_diff(pr.url)
 
             tommi_g = auth_manager.get_client_for_repo(config.tommi_repo)
-            learner = TommiLearner(config=config, github_client=target_g, tommi_client=tommi_g)
+            learner = TommiLearner(config=config, github_client=target_g, tommi_client=tommi_g, operation="merge")
             result = learner.learn_from_merged_pr(pr=pr, pr_diff=diff_text)
 
             if result and result.get("pr_url"):
@@ -138,7 +138,7 @@ def main():
                 summary = result.get("learning_plan", {}).get("summary", "Rule update")
                 response_msg = (
                     f"🎓 **T.O.M.M.I. Post-Merge Learning**\n\n"
-                    f"I've analyzed maintainer review feedback from this merged PR (*{summary}*) and opened a rule proposal Pull Request on `thomasglasser/tommi`:\n"
+                    f"I've analyzed maintainer review feedback from this merged PR (*{summary}*) and opened a rule proposal Pull Request on `{config.tommi_repo}`:\n"
                     f"👉 **[View Rule Proposal PR]({pr_url})**\n\n"
                     f"Once merged, this rule will automatically apply to all future reviews."
                 )
@@ -226,7 +226,7 @@ def main():
 
             response_msg = (
                 f"🎓 **T.O.M.M.I. Feedback Processed!**\n\n"
-                f"I've synthesized this feedback (*{summary}*) and opened a rule proposal Pull Request on `thomasglasser/tommi`:\n"
+                f"I've synthesized this feedback (*{summary}*) and opened a rule proposal Pull Request on `{config.tommi_repo}`:\n"
                 f"👉 **[View Rule Proposal PR]({pr_url})**\n\n"
                 f"Once merged, this rule will automatically apply to all future reviews."
             )

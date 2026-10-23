@@ -16,11 +16,11 @@ logger = logging.getLogger("tommi.learner")
 
 
 class TommiLearner:
-    def __init__(self, config: TommiConfig, github_client: Github, tommi_client: Optional[Github] = None):
+    def __init__(self, config: TommiConfig, github_client: Github, tommi_client: Optional[Github] = None, operation: str = "feedback"):
         self.config = config
         self.g = github_client
         self.tommi_g = tommi_client or github_client
-        self.client = genai.Client(api_key=config.gemini_api_key)
+        self.client = genai.Client(api_key=config.get_key_for_operation(operation))
 
     def _parse_json_dict(self, raw_text: str) -> Dict[str, Any]:
         """Parses a JSON dictionary from response text, handling fences and prose."""

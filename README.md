@@ -51,10 +51,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run T.O.M.M.I.
-        uses: thomasglasser/tommi@main
+        uses: thomasglasser/TOMMI@main
         with:
           app-id: ${{ secrets.TOMMI_APP_ID }}
           private-key: ${{ secrets.TOMMI_PRIVATE_KEY }}
+          review-api-key: ${{ secrets.TOMMI_REVIEW_API_KEY }}
+          feedback-api-key: ${{ secrets.TOMMI_FEEDBACK_API_KEY }}
+          merge-api-key: ${{ secrets.TOMMI_MERGE_API_KEY }}
           gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
 ```
 
@@ -67,7 +70,7 @@ Maintainers and contributors can interact with T.O.M.M.I. directly in PR comment
 | Command | Description | Example |
 | :--- | :--- | :--- |
 | `/tommi review` | Runs a complete code review on the PR against all global and repository rules. | `/tommi review` |
-| `/tommi learn <rule>` | Teaches T.O.M.M.I. a new rule or preference. Automatically opens a PR against `thomasglasser/tommi`. | `/tommi learn Always prefer custom Holder wrappers for entity data.` |
+| `/tommi learn <rule>` | Teaches T.O.M.M.I. a new rule or preference. Automatically opens a PR against `thomasglasser/TOMMI`. | `/tommi learn Always prefer custom Holder wrappers for entity data.` |
 | `/tommi false-positive <reason>` | Explains why a comment was inaccurate so T.O.M.M.I. can add a nuanced exception rule. | `/tommi false-positive In this case, copying the list is required for concurrency.` |
 
 ---
@@ -88,4 +91,4 @@ If your repository contains a `TOMMI.md` or `AGENTS.md` file (or `.agents/rules/
 
 ## 📄 License
 
-MIT License. Copyright (c) Thomas Glasser.
+GNU General Public License v3.0 (GPL-3.0). See [LICENSE](LICENSE) for details.

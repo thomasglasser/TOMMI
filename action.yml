@@ -20,8 +20,21 @@ inputs:
     required: false
     default: ''
   gemini-api-key:
-    description: 'Google Gemini API Key'
-    required: true
+    description: 'Google Gemini API Key (fallback if specific keys are not provided)'
+    required: false
+    default: ''
+  review-api-key:
+    description: 'Dedicated Google Gemini API Key for code reviews and discussions (TOMMI_REVIEW_API_KEY)'
+    required: false
+    default: ''
+  feedback-api-key:
+    description: 'Dedicated Google Gemini API Key for /tommi learn and false-positive commands (TOMMI_FEEDBACK_API_KEY)'
+    required: false
+    default: ''
+  merge-api-key:
+    description: 'Dedicated Google Gemini API Key for post-merge rule learning (TOMMI_MERGE_API_KEY)'
+    required: false
+    default: ''
   model:
     description: 'Gemini model to use for analysis (default: auto - automatically discovers the newest Flash model)'
     required: false
@@ -29,7 +42,7 @@ inputs:
   tommi-repo:
     description: 'Repository name where central TOMMI rules are hosted'
     required: false
-    default: 'thomasglasser/tommi'
+    default: 'thomasglasser/TOMMI'
   thinking-budget:
     description: 'Thinking budget in tokens for Gemini reasoning (default: 2048; set to 0 to disable)'
     required: false
@@ -47,6 +60,14 @@ runs:
       with:
         python-version: '3.11'
 
+    - name: Cache Pip Dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: pip-tommi-${{ hashFiles(format('{0}/requirements.txt', github.action_path)) }}
+        restore-keys: |
+          pip-tommi-
+
     - name: Install Dependencies
       shell: bash
       run: |
@@ -59,6 +80,9 @@ runs:
         APP_ID: ${{ inputs.app-id }}
         PRIVATE_KEY: ${{ inputs.private-key }}
         GEMINI_API_KEY: ${{ inputs.gemini-api-key }}
+        TOMMI_REVIEW_API_KEY: ${{ inputs.review-api-key }}
+        TOMMI_FEEDBACK_API_KEY: ${{ inputs.feedback-api-key }}
+        TOMMI_MERGE_API_KEY: ${{ inputs.merge-api-key }}
         MODEL_NAME: ${{ inputs.model }}
         TOMMI_REPO: ${{ inputs.tommi-repo }}
         THINKING_BUDGET: ${{ inputs.thinking-budget }}

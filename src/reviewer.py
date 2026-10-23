@@ -72,7 +72,7 @@ class TommiReviewer:
     def __init__(self, config: TommiConfig, auth_token: Optional[str] = None, workspace_dir: Optional[str] = None):
         self.config = config
         self.auth_token = auth_token or config.github_token
-        self.client = genai.Client(api_key=config.gemini_api_key)
+        self.client = genai.Client(api_key=config.get_key_for_operation("review"))
         self.inspector = WorkspaceInspector(workspace_dir=workspace_dir)
         self.unreviewed_files: List[str] = []
 

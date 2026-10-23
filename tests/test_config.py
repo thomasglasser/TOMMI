@@ -21,9 +21,23 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(cfg.comment_id, 1001)
         self.assertEqual(cfg.comment_body, "/tommi review")
         self.assertEqual(cfg.model_name, "auto")
-        self.assertEqual(cfg.tommi_repo, "thomasglasser/tommi")
+        self.assertEqual(cfg.tommi_repo.lower(), "thomasglasser/tommi")
         self.assertEqual(cfg.thinking_budget, 2048)
         self.assertIsNone(cfg.max_inline_comments)
+
+    @patch.dict(os.environ, {
+        "GITHUB_TOKEN": "ghp_test123",
+        "TOMMI_REVIEW_API_KEY": "review_key_1",
+        "TOMMI_FEEDBACK_API_KEY": "feedback_key_2",
+        "TOMMI_MERGE_API_KEY": "merge_key_3",
+        "GITHUB_REPOSITORY": "thomasglasser/Mineraculous",
+        "PR_NUMBER": "42",
+    })
+    def test_dedicated_operation_keys(self):
+        cfg = TommiConfig.from_env()
+        self.assertEqual(cfg.get_key_for_operation("review"), "review_key_1")
+        self.assertEqual(cfg.get_key_for_operation("feedback"), "feedback_key_2")
+        self.assertEqual(cfg.get_key_for_operation("merge"), "merge_key_3")
 
     @patch.dict(os.environ, {
         "GITHUB_TOKEN": "ghp_test123",
