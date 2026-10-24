@@ -2,7 +2,7 @@
 
 ## 1. Naming & Terminology
 * **Descriptive & Action-Oriented**: Avoid vague names (`null`, `trigger`, `commander`, `d`, `a`, `g`). Use explicit, action-oriented names (e.g., `enqueueTransformation` instead of `transform`, `normalizeDegreesBetween180` instead of `normalizeDegrees`).
-* **No Cryptic Abbreviations**: Do NOT use arbitrary or cryptic abbreviations for domain concepts or variables (e.g., avoid `MLB` for Miraculous Ladybug, or `ent` for `entity`). Use clear, descriptive names. However, standard, universally recognized Minecraft and mathematical abbreviations (such as `pos` for position, `rot` for rotation, `dist` for distance, `prev` for previous, and `curr` for current) are allowed.
+* **No Cryptic Abbreviations**: Do NOT use arbitrary or cryptic abbreviations for domain concepts or variables (e.g., avoid `MLB` for Miraculous Ladybug, or `ent` for `entity`). Use clear, descriptive names. However, standard, universally recognized Minecraft and mathematical abbreviations (such as `pos` for position, `rot` for rotation, `xRot` / `yRot`, `dist` for distance, `prev` for previous, and `curr` for current) are allowed.
 * **American English Spelling & Grammar**: ALWAYS follow American English spelling and grammar across all code identifiers, variable names, method names, class names, comments, and Javadocs (e.g., use `color` instead of `colour`, `synchronize` instead of `synchronise`, `behavior` instead of `behaviour`, `canceled` instead of `cancelled`, `center` instead of `centre`, `program` instead of `programme`).
 * **Java Naming Conventions**: Strictly follow standard Java conventions (camelCase methods/variables, PascalCase types).
 * **Constant Naming**: `public static final` (PSF) fields MUST use `CAPITAL_SNAKE_CASE`.
@@ -91,4 +91,3 @@
   * In particular, NEVER assume a container, attachment, or manager method named `get(key)` returns null or acts as a plain nullable map lookup; in modern APIs and mod architectures, `get(key)` methods frequently implement `getOrCreate` semantics (e.g. `computeIfAbsent`) and are non-null by contract.
   * When code calls external methods, helpers, or context objects whose declarations are outside the diff hunk, ALWAYS verify the actual return type and nullability contract before flagging potential `NullPointerException`s or client/server side-safety issues.
   * If you cannot verify the return type or contract from the codebase or surrounding files, do NOT guess or speculate. If the code compiles cleanly, assume the API contract and return type are intentional and type-safe.
-
