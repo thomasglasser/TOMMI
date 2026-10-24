@@ -166,5 +166,54 @@ class TestLearnerIntegration(unittest.TestCase):
                 learner._refactor_and_integrate_rule(current_doc, "rules/core.md", plan)
             self.assertIn("Could not cleanly refactor and integrate rule", str(ctx.exception))
 
+    def test_create_rule_pr_permission_error_on_git_ref(self):
+        from github import GithubException
+        config = TommiConfig(github_token="fake", gemini_api_key="fake", github_repository="test/repo", pr_number=1, tommi_repo="thomasglasser/TOMMI")
+        mock_tommi_repo = MagicMock()
+        mock_tommi_repo.default_branch = "main"
+        mock_tommi_repo.get_branch.return_value.commit.sha = "123456"
+        mock_tommi_repo.create_git_ref.side_effect = GithubException(
+            status=403,
+            data={"message": "Resource not accessible by integration", "documentation_url": "https://docs.github.com/rest/git/refs#create-a-reference"}
+        )
+
+        mock_github = MagicMock()
+        mock_github.get_repo.return_value = mock_tommi_repo
+
+        learner = TommiLearner(config=config, github_client=mock_github, tommi_client=mock_github)
+        plan = {"target_file": "rules/core.md", "summary": "Test rule", "rationale": "Testing"}
+
+        with self.assertRaises(PermissionError) as ctx:
+            learner._create_rule_pr(plan, "User feedback")
+        self.assertIn("Contents: write", str(ctx.exception))
+        self.assertIn("thomasglasser/TOMMI", str(ctx.exception))
+
+    def test_create_rule_pr_permission_error_on_create_pull(self):
+        from github import GithubException
+        config = TommiConfig(github_token="fake", gemini_api_key="fake", github_repository="test/repo", pr_number=1, tommi_repo="thomasglasser/TOMMI")
+        mock_tommi_repo = MagicMock()
+        mock_tommi_repo.default_branch = "main"
+        mock_tommi_repo.get_branch.return_value.commit.sha = "123456"
+        mock_file_content = MagicMock()
+        mock_file_content.decoded_content = b"# Core Rules\n"
+        mock_file_content.sha = "sha1"
+        mock_tommi_repo.get_contents.return_value = mock_file_content
+        mock_tommi_repo.create_pull.side_effect = GithubException(
+            status=403,
+            data={"message": "Resource not accessible by integration"}
+        )
+
+        mock_github = MagicMock()
+        mock_github.get_repo.return_value = mock_tommi_repo
+
+        learner = TommiLearner(config=config, github_client=mock_github, tommi_client=mock_github)
+        plan = {"target_file": "rules/core.md", "summary": "Test rule", "rationale": "Testing"}
+
+        with patch.object(learner, "_refactor_and_integrate_rule", return_value="# Updated Rules\n"):
+            with self.assertRaises(PermissionError) as ctx:
+                learner._create_rule_pr(plan, "User feedback")
+            self.assertIn("Pull requests: write", str(ctx.exception))
+            self.assertIn("thomasglasser/TOMMI", str(ctx.exception))
+
 if __name__ == "__main__":
     unittest.main()

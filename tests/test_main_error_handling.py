@@ -294,6 +294,51 @@ class TestMainErrorHandling(unittest.TestCase):
         self.assertIn("Connection Error", mock_commenter.reply_to_comment.call_args[0][0])
         mock_commenter.add_reaction.assert_any_call("confused")
 
+    @patch("src.main.TommiLearner")
+    @patch("src.main.GitHubCommenter")
+    @patch("src.main.GitHubAuthManager")
+    @patch("src.main.TommiConfig.from_env")
+    @patch("src.main.TommiReviewer")
+    def test_main_handles_github_permission_error_on_feedback(self, mock_reviewer_cls, mock_from_env, mock_auth_cls, mock_commenter_cls, mock_learner_cls):
+        mock_config = MagicMock()
+        mock_config.event_name = "pull_request_review_comment"
+        mock_config.is_merged = False
+        mock_config.comment_body = "/tommi false-positive rot is acceptable"
+        mock_config.comment_author = "thomasglasser"
+        mock_config.comment_author_type = "User"
+        mock_config.github_repository = "test/repo"
+        mock_config.tommi_repo = "thomasglasser/TOMMI"
+        mock_config.pr_number = 1
+        mock_config.comment_id = 123
+        mock_config.in_reply_to_id = 456
+        mock_from_env.return_value = mock_config
+
+        mock_commenter = MagicMock()
+        mock_commenter_cls.return_value = mock_commenter
+
+        mock_auth = MagicMock()
+        mock_tommi_repo = MagicMock()
+        mock_tommi_repo.owner.login = "thomasglasser"
+        mock_tommi_g = MagicMock()
+        mock_tommi_g.get_repo.return_value = mock_tommi_repo
+        mock_auth.get_client_for_repo.return_value = mock_tommi_g
+        mock_auth_cls.return_value = mock_auth
+
+        mock_learner = MagicMock()
+        mock_learner.process_feedback.side_effect = PermissionError(
+            "Resource not accessible by integration: The GitHub App installation lacks 'Contents: write' permissions on 'thomasglasser/TOMMI'."
+        )
+        mock_learner_cls.return_value = mock_learner
+
+        with self.assertRaises(SystemExit) as cm:
+            main()
+
+        self.assertEqual(cm.exception.code, 1)
+        mock_commenter.reply_to_comment.assert_called_once()
+        self.assertIn("Permission Error", mock_commenter.reply_to_comment.call_args[0][0])
+        self.assertIn("Contents: write", mock_commenter.reply_to_comment.call_args[0][0])
+        mock_commenter.add_reaction.assert_any_call("confused")
+
     @patch("src.main.GitHubCommenter")
     @patch("src.main.GitHubAuthManager")
     @patch("src.main.TommiConfig.from_env")

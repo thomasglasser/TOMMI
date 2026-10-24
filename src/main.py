@@ -3,7 +3,7 @@ import subprocess
 import sys
 import re
 from typing import Optional, Tuple
-from github import Github
+from github import Github, GithubException
 
 from src.config import TommiConfig
 from src.github_auth import GitHubAuthManager
@@ -331,6 +331,17 @@ def main():
                 "GitHub's API may be experiencing downtime or gateway timeouts. Please try running your command again in a moment."
             )
             commenter.reply_to_comment(auth_msg)
+            commenter.add_reaction("confused")
+            sys.exit(1)
+        elif isinstance(e, PermissionError) or "resource not accessible by integration" in error_str or (isinstance(e, GithubException) and e.status == 403):
+            logger.error(f"GitHub permission error: {e}")
+            perm_msg = (
+                f"⚠️ **T.O.M.M.I. Permission Error:** Unable to create rule proposal branch or Pull Request on `{config.tommi_repo}`. "
+                "The GitHub App installation lacks the required write permissions (`Contents: write` and `Pull requests: write`).\n\n"
+                f"> **Fix**: Please ensure the GitHub App `t-o-m-m-i-ai-reviewer` has **Contents: Read & write** and **Pull requests: Read & write** permissions, "
+                f"and that any updated permissions have been accepted on the installation for `{config.tommi_repo}`."
+            )
+            commenter.reply_to_comment(perm_msg)
             commenter.add_reaction("confused")
             sys.exit(1)
         else:
