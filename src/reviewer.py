@@ -89,7 +89,7 @@ class TommiReviewer:
         if self.auth_token:
             headers["Authorization"] = f"Bearer {self.auth_token}"
 
-        resp = requests.get(pr_url, headers=headers)
+        resp = requests.get(pr_url, headers=headers, timeout=60)
         if resp.status_code == 200:
             return resp.text
 
@@ -122,8 +122,8 @@ class TommiReviewer:
         diff_chunks: List[str] = []
         page = 1
 
-        while True:
-            resp = requests.get(files_url, headers=json_headers, params={"per_page": 100, "page": page})
+        while page <= 100:
+            resp = requests.get(files_url, headers=json_headers, params={"per_page": 100, "page": page}, timeout=60)
             if resp.status_code != 200:
                 raise RuntimeError(
                     f"Failed to fetch PR files page {page} (HTTP {resp.status_code}): {resp.text}"
