@@ -20,7 +20,10 @@ class TommiLearner:
         self.config = config
         self.g = github_client
         self.tommi_g = tommi_client or github_client
-        self.client = genai.Client(api_key=config.get_key_for_operation(operation))
+        self.client = genai.Client(
+            api_key=config.get_key_for_operation(operation),
+            http_options=types.HttpOptions(timeout=90.0)
+        )
 
     def _parse_json_dict(self, raw_text: str) -> Dict[str, Any]:
         """Parses a JSON dictionary from response text, handling fences and prose."""

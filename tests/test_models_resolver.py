@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from src.models_resolver import resolve_model_name, resolve_candidate_models, clear_model_cache
+from src.models_resolver import resolve_model_name, resolve_candidate_models, clear_model_cache, DEFAULT_FLASH_MODELS
 
 class MockModel:
     def __init__(self, name):
@@ -48,23 +48,22 @@ class TestModelsResolver(unittest.TestCase):
         resolved = resolve_model_name(client, configured_model="auto")
         self.assertEqual(resolved, "gemini-3.8-flash")
 
-    def test_auto_fails_if_models_list_fails(self):
+    def test_auto_falls_back_if_models_list_fails(self):
         client = MagicMock()
         client.models.list.side_effect = RuntimeError("API connection timeout")
 
-        with self.assertRaises(RuntimeError):
-            resolve_candidate_models(client, configured_model="auto")
+        candidates = resolve_candidate_models(client, configured_model="auto")
+        self.assertEqual(candidates, DEFAULT_FLASH_MODELS)
 
-    def test_auto_fails_if_no_flash_models_found(self):
+    def test_auto_falls_back_if_no_flash_models_found(self):
         client = MagicMock()
         client.models.list.return_value = [
             MockModel("models/text-embedding-004"),
             MockModel("models/gemini-embedding-001"),
         ]
 
-        with self.assertRaises(ValueError):
-            resolve_candidate_models(client, configured_model="auto")
+        candidates = resolve_candidate_models(client, configured_model="auto")
+        self.assertEqual(candidates, DEFAULT_FLASH_MODELS)
 
 if __name__ == "__main__":
     unittest.main()
-

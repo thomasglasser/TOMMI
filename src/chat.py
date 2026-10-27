@@ -27,7 +27,10 @@ class TommiConversationHandler:
         self.config = config
         self.g = github_client
         self.auth_token = auth_token or config.github_token
-        self.client = genai.Client(api_key=config.get_key_for_operation("review"))
+        self.client = genai.Client(
+            api_key=config.get_key_for_operation("review"),
+            http_options=types.HttpOptions(timeout=90.0)
+        )
         self.inspector = WorkspaceInspector(workspace_dir=workspace_dir)
 
     def _extract_response_text(self, response: Any) -> str:
