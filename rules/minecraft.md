@@ -33,6 +33,7 @@
 * **Covariant Registrars & Delegation to Base Generic Registrars**:
   * When specialized registrars (`ItemsRegistrar`, `BlocksRegistrar`, `EntitiesRegistrar`) must return covariant holder subtypes (`ItemHolder<I>`, `BlockHolder<B>`, `EntityHolder<E>`), NEVER suggest delegating registration to a generic base registrar (such as `FabricRegistrar<T>`) that returns base `ExtendedHolder<T, I>`.
   * Delegating to a generic registrar breaks covariance and forces redundant instance allocations, casts, and object re-wrapping. If entries tracking or registration boilerplate is to be shared, it must be solved in the common API base class (`Registrar<T>`), not through delegation in platform implementations.
+* **ExtendedHolder Key Access**: When querying the resource key from an `ExtendedHolder` instance, ALWAYS prefer calling `ExtendedHolder#key()` over `Holder#getKey()`.
 * **SavedData Serialization**: Do NOT flag `.getOrThrow()` calls on `Codec` operations within `SavedData` `save()` or `load()` methods as unhandled exceptions or dangerous; Minecraft's `SavedData` system handles serialization errors internally.
 * **Registry Lookups via BuiltInRegistries (`ResourceKey` vs `ResourceLocation`)**:
   * In Minecraft 1.21.x (and pre-26.x), `ResourceKey#registry()` returns a `ResourceLocation` representing the registry ID, NOT a `ResourceKey`.
