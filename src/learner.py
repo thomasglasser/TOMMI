@@ -22,7 +22,7 @@ class TommiLearner:
         self.tommi_g = tommi_client or github_client
         self.client = genai.Client(
             api_key=config.get_key_for_operation(operation),
-            http_options=types.HttpOptions(timeout=90.0)
+            http_options=types.HttpOptions(timeout=120_000)
         )
 
     def _parse_json_dict(self, raw_text: str) -> Dict[str, Any]:

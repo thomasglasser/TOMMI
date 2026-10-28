@@ -74,7 +74,7 @@ class TommiReviewer:
         self.auth_token = auth_token or config.github_token
         self.client = genai.Client(
             api_key=config.get_key_for_operation("review"),
-            http_options=types.HttpOptions(timeout=90.0)
+            http_options=types.HttpOptions(timeout=120_000)
         )
         self.inspector = WorkspaceInspector(workspace_dir=workspace_dir)
         self.unreviewed_files: List[str] = []
