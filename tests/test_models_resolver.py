@@ -28,6 +28,7 @@ class TestModelsResolver(unittest.TestCase):
             MockModel("models/gemini-2.5-flash"),
             MockModel("models/gemini-3.7-flash"),
             MockModel("models/gemini-3.8-flash"),
+            MockModel("models/gemini-4-hydrogen"),
             MockModel("models/gemini-3.8-flash-lite"),
             MockModel("models/gemini-2.0-flash-lite"),
             MockModel("models/gemini-1.5-flash-8b"),
@@ -39,13 +40,14 @@ class TestModelsResolver(unittest.TestCase):
         self.assertEqual(
             candidates,
             [
+                "gemini-4-hydrogen",
                 "gemini-3.8-flash",
                 "gemini-3.7-flash",
             ],
         )
 
         resolved = resolve_model_name(client, configured_model="auto")
-        self.assertEqual(resolved, "gemini-3.8-flash")
+        self.assertEqual(resolved, "gemini-4-hydrogen")
 
     def test_auto_fails_if_models_list_fails(self):
         client = MagicMock()

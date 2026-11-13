@@ -120,7 +120,7 @@ def _add_review_arguments(p: argparse.ArgumentParser) -> None:
     config_group.add_argument(
         "--model", "-m",
         default="auto",
-        help="Gemini model name override (default: 'auto', discovering fastest Flash model).",
+        help="Gemini model name override (default: 'auto', discovering fastest Flash/Hydrogen model).",
     )
     config_group.add_argument(
         "--thinking-budget",

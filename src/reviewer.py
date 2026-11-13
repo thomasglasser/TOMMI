@@ -1310,7 +1310,7 @@ Return ONLY a strict JSON array of objects, starting with '[' and ending with ']
         elif preferred_model:
             models_to_try.append(preferred_model)
         if not models_to_try:
-            models_to_try = ["gemini-2.5-flash"]
+            models_to_try = ["gemini-4-hydrogen", "gemini-3.8-flash"]
 
         raw_verdicts = None
         for model in models_to_try:
